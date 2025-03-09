@@ -1,0 +1,29 @@
+{
+  "cli": {
+    "version": ">= 14.4.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "production": {}
+  },
+  "extra": {
+    "eas": {
+      "projectId": "b79d6b93-09be-46a5-95c5-64d85bed66f8"
+    }
+  }
+}
