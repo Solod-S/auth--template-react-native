@@ -13,15 +13,14 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { StatusBar } from "expo-status-bar";
-import { Loading, CustomKeyboardView } from "../components";
+import { Loading, CustomKeyboardView } from "../../components";
 
 import Octicons from "@expo/vector-icons/Octicons";
 import { useRouter } from "expo-router";
-import authStore from "../store/authStore";
-import Toast from "react-native-toast-message";
+import { useAuth } from "../../context/authContext";
 
 export default function SignIn() {
-  const { login } = authStore;
+  const { login, loginWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const router = useRouter();
@@ -30,45 +29,26 @@ export default function SignIn() {
   const passwordRef = useRef("");
 
   const handleLogin = async () => {
-    try {
-      if (!emailRef.current || !passwordRef.current) {
-        Toast.show({
-          type: "info",
-          position: "top",
-          text2: "Please fill all the fields",
-          visibilityTime: 2000,
-          autoHide: true,
-          topOffset: 50,
-        });
-        return;
-      }
-      setLoading(true);
-      const response = await login(emailRef.current, passwordRef.current);
-      setLoading(false);
-      if (!response.success) {
-        Toast.show({
-          type: "error",
-          position: "top",
-          text2: response.message,
-          visibilityTime: 2000,
-          autoHide: true,
-          topOffset: 50,
-        });
-      }
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        position: "top",
-        text2: error.message,
-        visibilityTime: 2000,
-        autoHide: true,
-        topOffset: 50,
-      });
-    } finally {
-      setLoading(false);
+    if (!emailRef.current || !passwordRef.current) {
+      Alert.alert("Sign in", "Please fill all the fields");
+      return;
+    }
+    setLoading(true);
+    const response = await login(emailRef.current, passwordRef.current);
+    setLoading(false);
+    if (!response.success) {
+      Alert.alert("Sign in", response.message);
     }
   };
 
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    const response = await loginWithGoogle();
+    setLoading(false);
+    if (!response.success) {
+      Alert.alert("Google Sign In", response.message);
+    }
+  };
   return (
     <CustomKeyboardView>
       <StatusBar style="dark" />
@@ -81,7 +61,7 @@ export default function SignIn() {
           <Image
             style={{ width: wp(100), height: hp(20) }}
             resizeMode="contain"
-            source={require("../assets/images/login.png")}
+            source={require("../../assets/images/login.png")}
           />
         </View>
         <View className="gap-10">
@@ -92,7 +72,7 @@ export default function SignIn() {
             Sign In
           </Text>
           {/* Inputs */}
-          <View className="gap-4 ">
+          <View className="gap-4">
             <View
               style={{ height: hp(7) }}
               className="flex-row gap-4 px-4 bg-neutral-100 items-center rounded-xl"
@@ -174,6 +154,18 @@ export default function SignIn() {
             </View>
           </View>
         </View>
+        {/* <TouchableOpacity
+          onPress={handleGoogleLogin}
+          style={{ height: hp(6.5) }}
+          className="bg-red-500 rounded-xl justify-center items-center"
+        >
+          <Text
+            style={{ fontSize: hp(2.7) }}
+            className="text-white font-bold tracking-wider"
+          >
+            Sign In with Google
+          </Text>
+        </TouchableOpacity> */}
       </View>
     </CustomKeyboardView>
   );

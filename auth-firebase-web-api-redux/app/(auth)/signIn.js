@@ -7,35 +7,30 @@ import {
   Pressable,
   Alert,
 } from "react-native";
-
 import React, { useRef, useState } from "react";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { StatusBar } from "expo-status-bar";
-import { CustomKeyboardView, Loading } from "../components";
-
+import { Loading, CustomKeyboardView } from "../../components";
+import { loginUser } from "../../redux/slices/authSlice";
 import Octicons from "@expo/vector-icons/Octicons";
 import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import authStore from "../store/authStore";
 import Toast from "react-native-toast-message";
+import { useDispatch } from "react-redux";
 
-export default function SignUp() {
-  const { register } = authStore;
+export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const router = useRouter();
-
+  const dispatch = useDispatch();
   const emailRef = useRef("");
   const passwordRef = useRef("");
-  const userNameRef = useRef("");
-  const profileUrlRef = useRef("");
 
-  const handleRegister = async () => {
+  const handleLogin = async () => {
     try {
-      if (!emailRef.current || !passwordRef.current || !userNameRef.current) {
+      if (!emailRef.current || !passwordRef.current) {
         Toast.show({
           type: "info",
           position: "top",
@@ -46,52 +41,36 @@ export default function SignUp() {
         });
         return;
       }
-
-      // registration process
-      setLoading(true);
-      const response = await register(
-        emailRef.current,
-        passwordRef.current,
-        userNameRef.current,
-        profileUrlRef.current
+      dispatch(
+        loginUser({ email: emailRef.current, password: passwordRef.current })
       );
-      console.log(`got response`, response);
-      if (!response.success) {
-        Toast.show({
-          type: "error",
-          position: "top",
-          text2: response.message,
-          visibilityTime: 2000,
-          autoHide: true,
-          topOffset: 50,
-        });
-      }
     } catch (error) {
+      console.log(`Error in login.`, error);
       Toast.show({
         type: "error",
         position: "top",
-        text2: error.message,
+        text1: "Failed",
+        text2: "Error in login.",
         visibilityTime: 2000,
         autoHide: true,
         topOffset: 50,
       });
-    } finally {
-      setLoading(false);
     }
   };
+
   return (
     <CustomKeyboardView>
       <StatusBar style="dark" />
       <View
-        style={{ paddingTop: hp(7), paddingHorizontal: wp(5) }}
+        style={{ paddingTop: hp(8), paddingHorizontal: wp(5) }}
         className="flex-1 gap-12"
       >
         <View className="item-center">
           {/* Sign in image */}
           <Image
-            style={{ width: wp(100), height: hp(25) }}
+            style={{ width: wp(100), height: hp(20) }}
             resizeMode="contain"
-            source={require("../assets/images/register.png")}
+            source={require("../../assets/images/login.png")}
           />
         </View>
         <View className="gap-10">
@@ -99,24 +78,10 @@ export default function SignUp() {
             style={{ fontSize: hp(4) }}
             className="font-bold tracking-wider text-center text-neutral-800"
           >
-            Sign Up
+            Sign In
           </Text>
           {/* Inputs */}
           <View className="gap-4">
-            <View
-              style={{ height: hp(7) }}
-              className="flex-row gap-4 px-4 bg-neutral-100 items-center rounded-xl"
-            >
-              <Feather name="user" size={hp(2.7)} color="gray" />
-              <TextInput
-                onChangeText={value => (userNameRef.current = value)}
-                style={{ fontSize: hp(2) }}
-                placeholder="Username"
-                placeholderTextColor={"gray"}
-                className="flex-1 font-semibold text-neutral-700"
-              />
-            </View>
-
             <View
               style={{ height: hp(7) }}
               className="flex-row gap-4 px-4 bg-neutral-100 items-center rounded-xl"
@@ -130,39 +95,32 @@ export default function SignUp() {
                 className="flex-1 font-semibold text-neutral-700"
               />
             </View>
-
-            <View
-              style={{ height: hp(7) }}
-              className="flex-row gap-4 px-4 bg-neutral-100 items-center rounded-xl"
-            >
-              <Pressable
-                onPress={() => setSecureTextEntry(prevState => !prevState)}
+            <View className="gap-3">
+              <View
+                style={{ height: hp(7) }}
+                className="flex-row gap-4 px-4 bg-neutral-100 items-center rounded-xl"
               >
-                <Octicons name="lock" size={hp(2.7)} color="gray" />
-              </Pressable>
-              <TextInput
-                onChangeText={value => (passwordRef.current = value)}
-                style={{ fontSize: hp(2) }}
-                placeholder="Password"
-                secureTextEntry={secureTextEntry}
-                placeholderTextColor={"gray"}
-                className="flex-1 font-semibold text-neutral-700"
-              />
+                <Pressable
+                  onPress={() => setSecureTextEntry(prevState => !prevState)}
+                >
+                  <Octicons name="lock" size={hp(2.7)} color="gray" />
+                </Pressable>
+                <TextInput
+                  onChangeText={value => (passwordRef.current = value)}
+                  style={{ fontSize: hp(2) }}
+                  placeholder="Password"
+                  secureTextEntry={secureTextEntry}
+                  placeholderTextColor={"gray"}
+                  className="flex-1 font-semibold text-neutral-700"
+                />
+              </View>
+              <Text
+                style={{ fontSize: hp(1.8) }}
+                className="font-semibold text-right text-neutral-500"
+              >
+                Forget password?
+              </Text>
             </View>
-            <View
-              style={{ height: hp(7) }}
-              className="flex-row gap-4 px-4 bg-neutral-100 items-center rounded-xl"
-            >
-              <Feather name="image" size={hp(2.7)} color="gray" />
-              <TextInput
-                onChangeText={value => (profileUrlRef.current = value)}
-                style={{ fontSize: hp(2) }}
-                placeholder="Avatar Url"
-                placeholderTextColor={"gray"}
-                className="flex-1 font-semibold text-neutral-700"
-              />
-            </View>
-
             {/* Submit btn */}
             <View>
               {loading ? (
@@ -171,7 +129,7 @@ export default function SignUp() {
                 </View>
               ) : (
                 <TouchableOpacity
-                  onPress={handleRegister}
+                  onPress={handleLogin}
                   style={{ height: hp(6.5) }}
                   className="bg-indigo-500 rounded-xl justify-center items-center"
                 >
@@ -179,7 +137,7 @@ export default function SignUp() {
                     style={{ fontSize: hp(2.7) }}
                     className="text-white font-bold tracking-wider"
                   >
-                    Sign Up
+                    Sign In
                   </Text>
                 </TouchableOpacity>
               )}
@@ -191,15 +149,15 @@ export default function SignUp() {
                 style={{ fontSize: hp(1.8) }}
                 className="font-semibold text-neutral-500"
               >
-                Already have an account?{" "}
+                Don't have an account?{" "}
               </Text>
               <Pressable>
                 <Text
                   style={{ fontSize: hp(1.8) }}
                   className="font-bold text-indigo-500"
-                  onPress={() => router.push("signIn")}
+                  onPress={() => router.push("signUp")}
                 >
-                  Sign In
+                  Sign Up
                 </Text>
               </Pressable>
             </View>

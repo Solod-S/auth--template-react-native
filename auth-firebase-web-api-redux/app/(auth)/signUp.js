@@ -14,14 +14,14 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { StatusBar } from "expo-status-bar";
-import { CustomKeyboardView, Loading } from "../components";
+import { CustomKeyboardView, Loading } from "../../components";
 
 import Octicons from "@expo/vector-icons/Octicons";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser, setIsStatus } from "../redux/slices/authSlice";
+import { registerUser, setIsStatus } from "../../redux/slices/authSlice";
 
 export default function SignUp() {
   const { status, isLoading } = useSelector(state => state.auth);
@@ -70,7 +70,7 @@ export default function SignUp() {
           <Image
             style={{ width: wp(100), height: hp(25) }}
             resizeMode="contain"
-            source={require("../assets/images/register.png")}
+            source={require("../../assets/images/register.png")}
           />
         </View>
         <View className="gap-10">

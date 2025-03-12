@@ -6,7 +6,7 @@ import "../global.css";
 import { useEffect } from "react";
 import useAuthStore from "../store/useAuthStore.js";
 
-const MainLayout = () => {
+const MainLayout = ({ children }) => {
   const { user, isAuthenticated, initAuthListener } = useAuthStore();
 
   const segments = useSegments();
@@ -18,30 +18,30 @@ const MainLayout = () => {
   }, []);
 
   useEffect(() => {
-    //  check if the user is authenticated or not
-    if (typeof isAuthenticated == "undefined") return;
+    // Check if the user is authenticated or not
+    // console.log(`isAuthenticated`, isAuthenticated);
+    if (typeof isAuthenticated === "undefined") return;
     // user in app group
-    const inApp = segments[0] == "(app)";
+    // console.log(`segments[0]`, segments[0]);
+    const inApp = segments[0] === "(app)";
+    const inAuth = segments[0] === "(auth)";
     if (isAuthenticated && !inApp) {
-      // if user authenticated
-      // and not in (app) => redirect home
+      // if user authenticated and not in (app) => redirect to home
       router.replace("home");
-    } else if (isAuthenticated == false) {
-      // if user is not authenticated
-      //  redirect to signIn
+    } else if (isAuthenticated === false && !inAuth) {
+      // if user is not authenticated => redirect to signIn
       router.replace("signIn");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, segments]);
 
-  return <View></View>;
+  return <View style={{ flex: 1 }}>{children}</View>;
 };
 
 export default function RootLayout() {
   return (
-    <>
+    <MainLayout>
       <Slot />
-      <MainLayout />
       <Toast />
-    </>
+    </MainLayout>
   );
 }

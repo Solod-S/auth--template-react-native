@@ -11,20 +11,21 @@ const MainLayout = () => {
   const router = useRouter();
 
   useEffect(() => {
-    //  check if the user is authenticated or not
-    if (typeof isAuthenticated == "undefined") return;
+    // Check if the user is authenticated or not
+    // console.log(`isAuthenticated`, isAuthenticated);
+    if (typeof isAuthenticated === "undefined") return;
     // user in app group
-    const inApp = segments[0] == "(app)";
+    // console.log(`segments[0]`, segments[0]);
+    const inApp = segments[0] === "(app)";
+    const inAuth = segments[0] === "(auth)";
     if (isAuthenticated && !inApp) {
-      // if user authenticated
-      // and not in (app) => redirect home
+      // if user authenticated and not in (app) => redirect to home
       router.replace("home");
-    } else if (isAuthenticated == false) {
-      // if user is not authenticated
-      //  redirect to signIn
+    } else if (isAuthenticated === false && !inAuth) {
+      // if user is not authenticated => redirect to signIn
       router.replace("signIn");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, segments]);
 
   return (
     <View className="flex-1 bg-white">

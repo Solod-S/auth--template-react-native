@@ -13,18 +13,19 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { StatusBar } from "expo-status-bar";
-import { Loading, CustomKeyboardView } from "../components";
-import { loginUser } from "../redux/slices/authSlice";
+import { Loading, CustomKeyboardView } from "../../components";
+
 import Octicons from "@expo/vector-icons/Octicons";
 import { useRouter } from "expo-router";
+import useAuthStore from "../../store/useAuthStore";
 import Toast from "react-native-toast-message";
-import { useDispatch } from "react-redux";
 
 export default function SignIn() {
+  const { login } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const router = useRouter();
-  const dispatch = useDispatch();
+
   const emailRef = useRef("");
   const passwordRef = useRef("");
 
@@ -41,20 +42,30 @@ export default function SignIn() {
         });
         return;
       }
-      dispatch(
-        loginUser({ email: emailRef.current, password: passwordRef.current })
-      );
+      setLoading(true);
+      const response = await login(emailRef.current, passwordRef.current);
+      setLoading(false);
+      if (!response.success) {
+        Toast.show({
+          type: "error",
+          position: "top",
+          text2: response.message,
+          visibilityTime: 2000,
+          autoHide: true,
+          topOffset: 50,
+        });
+      }
     } catch (error) {
-      console.log(`Error in login.`, error);
       Toast.show({
         type: "error",
         position: "top",
-        text1: "Failed",
-        text2: "Error in login.",
+        text2: error.message,
         visibilityTime: 2000,
         autoHide: true,
         topOffset: 50,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -70,7 +81,7 @@ export default function SignIn() {
           <Image
             style={{ width: wp(100), height: hp(20) }}
             resizeMode="contain"
-            source={require("../assets/images/login.png")}
+            source={require("../../assets/images/login.png")}
           />
         </View>
         <View className="gap-10">
@@ -81,7 +92,7 @@ export default function SignIn() {
             Sign In
           </Text>
           {/* Inputs */}
-          <View className="gap-4">
+          <View className="gap-4 ">
             <View
               style={{ height: hp(7) }}
               className="flex-row gap-4 px-4 bg-neutral-100 items-center rounded-xl"
