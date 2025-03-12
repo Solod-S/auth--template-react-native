@@ -1,4 +1,4 @@
-package com.solik098.chatapp
+package com.solik098.authapp
 
 import android.app.Application
 import android.content.res.Configuration

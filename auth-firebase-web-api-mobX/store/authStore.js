@@ -161,19 +161,45 @@ class AuthStore {
   }
 
   // Wrap this in action to avoid strict mode issues
+  // initAuthListener() {
+  //   this.isAuthenticated = undefined;
+  //   const unsubscribe = onAuthStateChanged(auth, async user => {
+  //     runInAction(() => {
+  //       if (user) {
+  //         this.user = user;
+  //         this.isAuthenticated = true;
+  //         this.updateUserData(user.uid);
+  //       } else {
+  //         this.user = null;
+  //         this.isAuthenticated = false;
+  //       }
+  //     });
+  //   });
+
+  //   return unsubscribe;
+  // }
   initAuthListener() {
     this.isAuthenticated = undefined;
     const unsubscribe = onAuthStateChanged(auth, async user => {
-      runInAction(() => {
-        if (user) {
-          this.user = user;
-          this.isAuthenticated = true;
-          this.updateUserData(user.uid);
-        } else {
-          this.user = null;
-          this.isAuthenticated = false;
-        }
-      });
+      try {
+        runInAction(() => {
+          if (user) {
+            this.user = {
+              uid: user.uid,
+              email: user.email,
+              name: user.displayName || null,
+              image: user.photoURL || null,
+            };
+            this.isAuthenticated = true;
+            this.updateUserData(user.uid);
+          } else {
+            this.user = null;
+            this.isAuthenticated = false;
+          }
+        });
+      } catch (error) {
+        console.error("Error in auth state listener:", error);
+      }
     });
 
     return unsubscribe;

@@ -25,5 +25,8 @@
     "eas": {
       "projectId": "b79d6b93-09be-46a5-95c5-64d85bed66f8"
     }
+  },
+  "android": {
+    "package": "com.solik098.authapp"
   }
 }

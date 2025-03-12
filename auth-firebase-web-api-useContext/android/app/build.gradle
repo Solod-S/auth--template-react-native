@@ -86,9 +86,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.solik098.chatapp'
+    namespace 'com.solik098.authapp'
     defaultConfig {
-        applicationId 'com.solik098.chatapp'
+        applicationId 'com.solik098.authapp'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

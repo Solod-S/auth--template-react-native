@@ -1,4 +1,4 @@
-package com.solik098.chatapp
+package com.solik098.authapp
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
